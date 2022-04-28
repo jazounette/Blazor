@@ -1,0 +1,117 @@
+﻿@page "/form"
+
+<h3>Formulaire</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-7">
+
+            <EditForm OnValidSubmit="Validate" Model="client">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="lenom">Nom:</label>
+                        <InputText type="text" class="form-control" id="lenom" placeholder="Saisir votre nom" @bind-Value="client.Name" />
+                        <small><ValidationMessage For="() => client.Name" /></small>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="lecour">Courriel:</label>
+                        <InputText class="form-control" id="lecour" placeholder="Saisir une adresse email" @bind-Value="client.Courriel" />
+                        <small><ValidationMessage For="() => client.Courriel" /></small>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="adresse">Adresse:</label>
+                        <InputText type="text" class="form-control" id="adresse" placeholder="Saisir votre adresse" @bind-Value="client.Adresse" />
+                        <small>
+                            <ValidationMessage For="() => client.Adresse" />
+                        </small>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="codepo">Code postal:</label>
+                        <InputText type="text" class="form-control" id="codepo" placeholder="Saisir un code postal" @bind-Value="client.CodePost" />
+                        <small>
+                            <ValidationMessage For="() => client.CodePost" />
+                        </small>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="couleur">What is your favorite color ?</label>
+                        <InputSelect class="form-control" id="couleur" @bind-Value="client.Couleur">
+                            <option value="Rouge">Rouge</option>
+                            <option value="Vert">Vert</option>
+                            <option value="Bleu">Bleu</option>
+                            <option value="Jaune">Jaune</option>
+                            <option value="Marron">Marron</option>
+                        </InputSelect>
+                        <small>
+                            <ValidationMessage For="() => client.Couleur" />
+                        </small>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="datenais">Date de naissance:</label>
+                        <InputDate type="date" class="form-control" id="datenais" @bind-Value="client.DateNaiss" />
+                        <small>
+                            <ValidationMessage For="() => client.DateNaiss" />
+                        </small>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <InputCheckbox type="checkbox" class="form-check-input" id="celib" @bind-Value="client.Celib" />
+                    <label class="form-check-label" for="celib">Célibataire:</label>
+                    <small>
+                        <ValidationMessage For="() => client.Celib" />
+                    </small>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Validation</button>
+            </EditForm>
+        </div>
+        <div class="col-5" style="display: @OnMeVoi">
+            <ul class="list-group">
+                <li class="list-group-item active">Résultat</li>
+                <li class="list-group-item">Nom: @client.Name</li>
+                <li class="list-group-item">eMail: @client.Courriel</li>
+                <li class="list-group-item">Adresse: @client.Adresse<br />Code Postal: @client.CodePost</li>
+                <li class="list-group-item">Age: @Age an@((Age > 1 ? "s" : ""))</li>
+                <li class="list-group-item">Nez leuz: @Nezlez</li>
+                <li class="list-group-item">Favorite color: @client.Couleur</li>
+                <li class="list-group-item @JeMeCache" >Célibataire</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    public Customer client = new Customer();
+    string OnMeVoi = "none", JeMeCache = "";
+    int Age;
+    DateTime aujoudhui = DateTime.Now;
+    DateTime aucommencement = new DateTime(1, 1, 1);
+    string Nezlez;
+
+    public async Task Validate() {
+        OnMeVoi = "block";
+        TimeSpan diffResult = aujoudhui - client.DateNaiss;
+        Age = (aucommencement + diffResult).Year - 1;
+        Nezlez = client.DateNaiss.ToString("dddd, dd MMMM yyyy");
+        JeMeCache = (client.Celib) ? "visible" : "invisible";
+    }
+
+    protected override void OnInitialized() {
+        //client.Name = "Chamousse";
+        //client.Courriel = "Geronimo.cham@free.fr";
+        //client.CodePost = "02420";
+        //client.Adresse = "28 rue du slip";
+
+        base.OnInitialized();
+    }
+
+
+}

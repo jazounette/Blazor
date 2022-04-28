@@ -1,0 +1,118 @@
+﻿@page "/pizza"
+
+<div class="container-fluid">
+    <div class="row text-center mb-3 p-3 bg-primary rounded">
+        <div class="col-8 offset-2 text-white"><h2>LES PIZZAZ DE ZAZA</h2></div>
+        <div class="form-check col-2">
+            <form>
+                <input type="checkbox" class="form-check-input" id="modeadmin" @bind-value="modeAdmin" />
+                <label class="form-check-label" for="modeadmin">Mode Administrateur</label>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12" style="display:@((modeAdmin) ? "block" : "none")">
+            <EditForm OnValidSubmit="Validate" Model="admin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <label for="lenom">Nom:</label>
+                        <InputText type="text" class="form-control" id="lenom" placeholder="Le nom de la pizza" @bind-Value="admin.Nom" />
+                        <small><ValidationMessage For="() => admin.Nom" /></small>
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="ingred">Ingrédient:</label>
+                        <InputText type="text" class="form-control" id="ingred" placeholder="Les ingrédients" @bind-Value="admin.Ingrédient" />
+                        <small><ValidationMessage For="() => admin.Ingrédient" /></small>
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="prix">Prix:</label>
+                        <InputNumber type="number" class="form-control" id="prix" placeholder="Le prix" @bind-Value="admin.Prix" />
+                        <small><ValidationMessage For="() => admin.Prix" /></small>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2 mb-2">Sauvegarde</button>
+                </div>
+            </EditForm>
+        </div>
+        <div class="col-8">
+            <div class="row">
+                @for (int i = 0; i < admin.PizzaTable.Length; i++)  {
+                    <div class="col-1">
+                        <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVwcGVyb25pJTIwcGl6emF8ZW58MHx8MHx8&w=1000&q=80" width="60" height="60">
+                    </div>
+                    <div class="col-9">
+                        <span class="h4 text-warning text-uppercase">@admin.PizzaTable[i].nom</span><br />@admin.PizzaTable[i].ingré
+                    </div>
+                    <div class="col-1 text-primary">
+                        @admin.PizzaTable[i].prix.ToString("0.00")€<br />
+                        @{ int j = i; }
+                        <button @onclick="@(()=>Commande(j))" class="btn btn-primary mt-2 mb-2">Ajout</button>
+                    </div>
+                    <div class="col-1 @((modeAdmin) ? "visible" : "invisible")">
+                        <br /><button @onclick="@(()=>Editage(j))" class="btn btn-primary mt-2 mb-2">Edit</button>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-4">
+            <table class="table table-striped table-sm">
+                <tbody>
+                    @{ int k = 0; }
+                    @foreach (var toto in comID)  {
+                        <tr>
+                            @{ int z = k; }
+                            <td class="text-warning">@admin.PizzaTable[toto].nom</td>
+                            <td class="text-primary">@admin.PizzaTable[toto].prix.ToString("0.00") €</td>
+                            <td><button @onclick="@(()=>Suprimage(z))" class="btn btn-danger btn-sm">X</button></td>
+                            @{ k++; }
+                        </tr>
+                     }
+                </tbody>
+            </table>
+            <p class="text-center font-weight-bold text-white bg-primary rounded">Total: @Total.ToString("0.00") €</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    public AdminForm admin = new AdminForm();
+    bool modeAdmin = false;
+    List<int> comID = new List<int>();
+    double Total = 0;
+    int éditionEnCour;
+
+    public async Task Validate()    {
+        Console.WriteLine($"Sauvegarde - {admin.Nom}");
+        admin.PizzaTable[éditionEnCour].nom = admin.Nom;
+        admin.PizzaTable[éditionEnCour].ingré = admin.Ingrédient;
+        admin.PizzaTable[éditionEnCour].prix = admin.Prix;
+        RecalculTot();
+    }
+    public void Commande(int ID)    {
+        Console.WriteLine($"Commande - {ID}");
+        comID.Add(ID);
+        Total += admin.PizzaTable[ID].prix;
+    }
+    public void Editage(int ID)    {
+        Console.WriteLine($"Éditage - {ID}");
+        admin.Nom = admin.PizzaTable[ID].nom;
+        admin.Ingrédient = admin.PizzaTable[ID].ingré;
+        admin.Prix = admin.PizzaTable[ID].prix;
+        éditionEnCour = ID;
+    }
+    public void Suprimage(int ID) {
+        Console.WriteLine($"Suprimage - {ID}");
+        comID.RemoveAt(ID);
+        RecalculTot();
+    }
+    public double RecalculTot() {
+        Total = 0;
+        foreach (var toto in comID) { Total += admin.PizzaTable[toto].prix; }
+        return Total;
+    }
+
+}

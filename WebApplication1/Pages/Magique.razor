@@ -1,0 +1,44 @@
+﻿@page "/magique"
+
+<h1>Nombre Magique</h1>
+
+<p>triche: @nombreSecret</p>
+
+<input type="number" @bind-value="mavaleur" />
+<button class="btn btn-primary" @onclick="Totobiloute">Cliquemoi</button>
+
+<p>Nombre d'Essai: @afficheEssai</p>
+
+
+<div>@résultat</div>
+
+@code {
+
+    Random rnd = new Random();
+
+    int nombreSecret = 0;
+    int nombreEssai = 5;
+    string résultat = "";
+    string afficheEssai = "";
+    int mavaleur = 99;
+
+    protected override async Task OnInitializedAsync()  {
+        nombreSecret = rnd.Next(1, 20);
+        afficheEssai = tartiflette(nombreEssai);
+    }
+
+    string tartiflette (int n) {
+        string toto ="";
+        for (int i = 0; i < n; i++) toto += "❤️ ";
+        return toto;
+    }
+
+    void Totobiloute(){
+        nombreEssai--;
+        afficheEssai = tartiflette(nombreEssai);
+        if (nombreEssai < 0) { résultat = "C'est Perdou 😭";  }
+        else if (mavaleur == nombreSecret) { résultat = "C'est Gagné ☺️";  }
+        else  résultat = "Manqué, essai encore";
+
+    }
+}

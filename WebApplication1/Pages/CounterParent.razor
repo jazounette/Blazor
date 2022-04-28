@@ -1,0 +1,16 @@
+﻿@page "/parent"
+
+<h3>CounterParent</h3>
+
+<p>Saisie de la valeur initial</p>
+
+<input type="number" @bind-value="initVal" @bind-value:event="oninput"/>
+
+<Counter InitialCount="@initVal"></Counter>
+
+
+@code {
+
+    private int initVal;
+
+}

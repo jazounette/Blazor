@@ -1,0 +1,23 @@
+﻿@page "/counter/{Id}"
+@page "/counter"
+@inherits CounterBase
+
+
+
+@if (currentCount > 5)
+{<p>le compteur est supérieur à 5</p>}
+
+<h1>Counter</h1>
+
+@if (Loading)
+{
+    <p>Loading.....</p>
+}
+else
+{
+    <p>Current count: @currentCount</p>
+
+    <button class="btn btn-primary" @onclick="IncrementCount" disabled="@(currentCount>11)" style="color:@Couleur">Click me</button>
+    //<button @onclick="() => currentCount++">Click me</button> //fonction anonume pour le onclick  
+
+}
